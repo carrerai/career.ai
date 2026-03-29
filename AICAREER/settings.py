@@ -33,6 +33,11 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.repl.co',
 ]
 
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True
+
 
 # Application definition
 
