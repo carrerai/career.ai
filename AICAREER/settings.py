@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-totvc$n^ss=jm968q_yz12qf$$23!q512l@=amz3owldovh(wz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
