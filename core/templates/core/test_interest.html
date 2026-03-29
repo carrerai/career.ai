@@ -1,0 +1,419 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Interest Test - AI Career Guide{% endblock %}
+
+{% block content %}
+<div class="test-container">
+    <div class="test-header">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 66%"></div>
+        </div>
+        <div class="test-info">
+            <h1>Interest Assessment</h1>
+            <p>Discover what activities and work environments you enjoy most</p>
+            <div class="step-indicator">Step 2 of 3</div>
+        </div>
+    </div>
+
+    <form method="post" class="test-form">
+        {% csrf_token %}
+        <div class="questions-container">
+            {% for question in questions %}
+            <div class="question-card {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}">
+                
+                <div class="question-header">
+                    <span class="question-number">{{ forloop.counter }}/{{ questions|length }}</span>
+                    <span class="question-trait">{{ question.trait }} - {% if question.trait == 'R' %}Realistic{% elif question.trait == 'I' %}Investigative{% elif question.trait == 'A' %}Artistic{% elif question.trait == 'S' %}Social{% elif question.trait == 'E' %}Enterprising{% else %}Conventional{% endif %}</span>
+                </div>
+                <div class="question-text">
+                    {{ question.text }}
+                </div>
+                <div class="scale-container">
+                    <div class="scale-labels">
+                        <span>Strongly Disagree</span>
+                        <span>Strongly Agree</span>
+                    </div>
+                    <div class="scale-options">
+                        {% for option in question.options_list %}
+                        <label class="scale-option">
+                            <input type="radio" 
+                                   name="question_{{ question.id }}" 
+                                   value="{{ option.score }}" 
+                                   class="scale-radio"
+                                   required>
+                            <span class="scale-value">{{ option.score }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="test-actions">
+            <button type="button" id="prevBtn" disabled>Previous</button>
+            <button type="button" id="nextBtn">Next</button>
+            <button type="submit" id="submitBtn" disabled>Continue</button>
+        </div>
+    </form>
+</div>
+
+<script>
+let current = 0;
+const questions = document.querySelectorAll(".question-card");
+const total = questions.length;
+
+const nextBtn = document.getElementById("nextBtn");
+const prevBtn = document.getElementById("prevBtn");
+const submitBtn = document.getElementById("submitBtn");
+
+function showQuestion(index) {
+    questions.forEach(q => q.classList.remove("active"));
+    questions[index].classList.add("active");
+
+    prevBtn.disabled = index === 0;
+    nextBtn.style.display = index === total - 1 ? "none" : "inline-block";
+    submitBtn.style.display = index === total - 1 ? "inline-block" : "none";
+
+    updateProgress();
+}
+
+function updateProgress() {
+    const answered = document.querySelectorAll("input[type=radio]:checked").length;
+    const percent = (answered / total) * 100;
+    document.querySelector(".progress-fill").style.width = percent + "%";
+
+    submitBtn.disabled = answered !== total;
+}
+
+nextBtn.addEventListener("click", () => {
+    if (current < total - 1) {
+        current++;
+        showQuestion(current);
+    }
+});
+
+prevBtn.addEventListener("click", () => {
+    if (current > 0) {
+        current--;
+        showQuestion(current);
+    }
+});
+
+document.querySelectorAll("input[type=radio]").forEach(input => {
+    input.addEventListener("change", () => {
+        updateProgress();
+        setTimeout(() => {
+            if (current < total - 1) {
+                current++;
+                showQuestion(current);
+            }
+        }, 300);
+    });
+});
+
+showQuestion(0);
+</script>
+
+<style>
+.test-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    min-height: 100vh;
+}
+
+.test-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: #f0f0f0;
+    border-radius: 2px;
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #000;
+    transition: width 0.3s ease;
+}
+
+.test-info h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.5rem;
+    font-weight: 400;
+    margin-bottom: 12px;
+    color: #000;
+}
+
+.test-info p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.step-indicator {
+    display: inline-block;
+    background: #f0f0f0;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #666;
+}
+
+.test-form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.questions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.question-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 32px;
+    transition: box-shadow 0.2s ease;
+    display: none;
+}
+
+.question-card.active {
+    display: block;
+}
+
+.question-card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.question-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #000;
+    color: #fff;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.question-trait {
+    background: #f0f0f0;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.question-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+.scale-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.scale-options {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.scale-option {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.scale-option input[type="radio"] {
+    display: none;
+}
+
+.scale-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border: 2px solid #e0e0e0;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #666;
+    background: #fff;
+    transition: all 0.2s ease;
+}
+
+.scale-option:hover .scale-value {
+    border-color: #000;
+    background: #f8f8f8;
+}
+
+.scale-option input[type="radio"]:checked + .scale-value {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.test-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    gap: 16px;
+}
+
+.test-actions button {
+    padding: 12px 24px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid #000;
+}
+
+#prevBtn {
+    background: #fff;
+    color: #000;
+}
+
+#prevBtn:hover:not(:disabled) {
+    background: #f8f8f8;
+}
+
+#nextBtn {
+    background: #000;
+    color: #fff;
+}
+
+#nextBtn:hover {
+    background: #333;
+    transform: translateY(-2px);
+}
+
+#submitBtn {
+    background: #000;
+    color: #fff;
+    padding: 14px 28px;
+}
+
+#submitBtn:hover:not(:disabled) {
+    background: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.test-actions button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-submit {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-submit:hover {
+    background: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 768px) {
+    .test-container {
+        padding: 20px 16px;
+    }
+    
+    .test-info h1 {
+        font-size: 2rem;
+    }
+    
+    .question-card {
+        padding: 24px 20px;
+    }
+    
+    .question-text {
+        font-size: 1rem;
+    }
+    
+    .scale-options {
+        gap: 4px;
+    }
+    
+    .scale-value {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+    }
+    
+    .test-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .test-actions button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}

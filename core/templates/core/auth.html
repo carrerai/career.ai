@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Signup - AI Career Guidance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           RESET & BASE
+        ============================================ */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --black: #0a0a0a;
+            --white: #ffffff;
+            --gray-50: #f9f9f9;
+            --gray-100: #f2f2f2;
+            --gray-200: #e5e5e5;
+            --gray-400: #a3a3a3;
+            --gray-600: #525252;
+            --border: rgba(0,0,0,0.08);
+            --shadow: 0 2px 8px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.06);
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 24px;
+            --radius-full: 9999px;
+            --font-display: 'DM Serif Display', Georgia, serif;
+            --font-body: 'DM Sans', system-ui, sans-serif;
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--gray-50);
+            color: var(--black);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            -webkit-font-smoothing: antialiased;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Subtle dot grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(0,0,0,0.07) 1px, transparent 1px);
+            background-size: 32px 32px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(249,249,249,0) 0%, rgba(249,249,249,0.95) 65%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* ============================================
+           AUTH WRAPPER
+        ============================================ */
+        .auth-wrapper {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            animation: fadeInUp 0.5s ease both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================
+           LOGO AREA
+        ============================================ */
+        .auth-brand {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .auth-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .auth-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--black);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .auth-logo-text {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: var(--black);
+            letter-spacing: -0.02em;
+        }
+
+        .auth-logo-text span {
+            color: var(--gray-400);
+        }
+
+        .auth-tagline {
+            font-size: 0.875rem;
+            color: var(--gray-400);
+            line-height: 1.5;
+        }
+
+        /* ============================================
+           CARD
+        ============================================ */
+        .auth-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 36px 36px 32px;
+            box-shadow: var(--shadow);
+        }
+
+        /* ============================================
+           TABS
+        ============================================ */
+        .auth-tabs {
+            display: flex;
+            background: var(--gray-100);
+            border-radius: var(--radius-full);
+            padding: 4px;
+            margin-bottom: 32px;
+            gap: 4px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px 16px;
+            text-align: center;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-400);
+            border-radius: var(--radius-full);
+            transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+        }
+
+        .auth-tab.active {
+            background: var(--black);
+            color: var(--white);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .auth-tab:not(.active):hover {
+            color: var(--black);
+            background: var(--gray-200);
+        }
+
+        /* ============================================
+           FORMS
+        ============================================ */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--gray-400);
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 48px;
+            padding: 0 16px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: var(--black);
+            background: var(--white);
+            transition: border-color var(--transition), box-shadow var(--transition);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .form-group input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .form-group input:focus {
+            border-color: var(--black);
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+        }
+
+        .form-group input:hover:not(:focus) {
+            border-color: var(--gray-400);
+        }
+
+        /* ============================================
+           SUBMIT BUTTON
+        ============================================ */
+        .btn {
+            width: 100%;
+            height: 48px;
+            padding: 0 24px;
+            background: var(--black);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-full);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
+            margin-top: 8px;
+            letter-spacing: 0.01em;
+        }
+
+        .btn:hover:not(:disabled) {
+            opacity: 0.85;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ============================================
+           MESSAGES
+        ============================================ */
+        .error-message,
+        .success-message {
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: none;
+            line-height: 1.5;
+        }
+
+        .error-message {
+            background: #fff1f0;
+            color: #c0392b;
+            border: 1px solid #ffd7d5;
+        }
+
+        .success-message {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        /* ============================================
+           FOOTER HINT
+        ============================================ */
+        .auth-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.78rem;
+            color: var(--gray-400);
+        }
+
+        /* ============================================
+           DIVIDER
+        ============================================ */
+        .form-divider {
+            height: 1px;
+            background: var(--gray-200);
+            margin: 20px 0;
+        }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 480px) {
+            body { padding: 16px; }
+
+            .auth-card {
+                padding: 28px 22px 24px;
+                border-radius: var(--radius-md);
+            }
+
+            .auth-brand { margin-bottom: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-wrapper">
+
+        <!-- Brand -->
+        <div class="auth-brand">
+            <div class="auth-logo">
+                <div class="auth-logo-text">Career<span>.AI</span></div>
+            </div>
+            <p class="auth-tagline">Start your career journey with AI-powered guidance</p>
+        </div>
+
+        <!-- Card -->
+        <div class="auth-card">
+
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('login')">Log in</button>
+                <button class="auth-tab" onclick="switchTab('signup')">Sign up</button>
+            </div>
+
+            <!-- Messages -->
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+
+            <!-- Login Form -->
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn" id="login-btn">Continue →</button>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signup-form" style="display: none;" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label for="signup-fullname">Full Name</label>
+                    <input type="text" id="signup-fullname" placeholder="Your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email Address</label>
+                    <input type="email" id="signup-email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" placeholder="Min. 6 characters" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="signup-confirm-password">Confirm Password</label>
+                    <input type="password" id="signup-confirm-password" placeholder="Repeat password" required>
+                </div>
+                <button type="submit" class="btn" id="signup-btn">Create Account →</button>
+            </form>
+
+        </div>
+
+        <p class="auth-footer">By continuing, you agree to our Terms of Service &amp; Privacy Policy.</p>
+
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.auth-tab');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+
+            tabs.forEach(t => t.classList.remove('active'));
+
+            if (tab === 'login') {
+                tabs[0].classList.add('active');
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+            } else {
+                tabs[1].classList.add('active');
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+            }
+
+            hideMessages();
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        function hideMessages() {
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const loginBtn = document.getElementById('login-btn');
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in…';
+
+            try {
+                const response = await fetch('/api/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    showSuccess('Login successful! Redirecting…');
+                    setTimeout(() => { window.location.href = '/'; }, 1500);
+                } else {
+                    showError(data.message || 'Login failed');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Continue →';
+            }
+        }
+
+        async function handleSignup(event) {
+            event.preventDefault();
+
+            const fullname = document.getElementById('signup-fullname').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
+            const signupBtn = document.getElementById('signup-btn');
+
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('Password must be at least 6 characters');
+                return;
+            }
+
+            signupBtn.disabled = true;
+            signupBtn.textContent = 'Creating account…';
+
+            try {
+                const response = await fetch('/api/signup/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        full_name: fullname,
+                        email,
+                        password,
+                        confirm_password: confirmPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    showSuccess('Account created successfully! Redirecting…');
+                    setTimeout(() => { window.location.href = '/'; }, 1500);
+                } else {
+                    showError(data.message || 'Signup failed');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+            } finally {
+                signupBtn.disabled = false;
+                signupBtn.textContent = 'Create Account →';
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>
