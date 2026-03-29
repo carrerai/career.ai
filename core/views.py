@@ -209,6 +209,7 @@ class LoginSignupView(View):
     def get(self, request):
         return render(request, 'core/auth.html')
 
+@method_decorator(csrf_exempt, name='dispatch')
 class SignupView(View):
     def post(self, request):
         data = json.loads(request.body)
@@ -254,6 +255,7 @@ class SignupView(View):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
 
+@method_decorator(csrf_exempt, name='dispatch')
 class LoginView(View):
     def post(self, request):
         data = json.loads(request.body)
@@ -282,6 +284,7 @@ class LoginView(View):
         else:
             return JsonResponse({'status': 'error', 'message': 'Invalid email or password'})
 
+@method_decorator(csrf_exempt, name='dispatch')
 class LogoutView(View):
     def post(self, request):
         logout(request)
