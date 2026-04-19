@@ -256,6 +256,12 @@ class SchoolTestResultView(View):
                     else:
                         # Penalize wrong answers
                         stream_scores[response.question.stream_hint] -= 1
+                    # Debug: print what's happening
+                    print(f"Response: Stream={response.question.stream_hint}, Correct={response.is_correct}, New Score={stream_scores[response.question.stream_hint]}")
+                else:
+                    print(f"Skipped response: Stream={response.question.stream_hint}, Valid streams={list(stream_scores.keys())}")
+            else:
+                print(f"Response missing question or stream_hint")
         
         # Convert all scores to positive and normalize to percentages
         # First, convert negative scores to positive by adding absolute value
