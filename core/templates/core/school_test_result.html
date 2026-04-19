@@ -24,10 +24,37 @@
             </p>
         </div>
 
-        <!-- Trait Scores -->
+        <!-- Score Breakdown - Including MCQ Percentage -->
         <div class="scores-section">
             <h3>Your Assessment Scores</h3>
             
+            <!-- MCQ Score -->
+            <div class="score-category">
+                <h4>Your Test Score</h4>
+                <div class="score-bar enhanced">
+                    <div class="score-header">
+                        <span class="score-label">Overall Performance</span>
+                        <span class="score-value">{{ result.mcq_percentage|add:0 }}%</span>
+                    </div>
+                    <div class="score-track">
+                        <div class="score-fill" style="width: {{ result.mcq_percentage|add:0 }}%"></div>
+                    </div>
+                    <div class="score-indicator">
+                        {% if result.mcq_percentage|add:0 >= 80 %}
+                            <span class="indicator excellent">Excellent</span>
+                        {% elif result.mcq_percentage|add:0 >= 60 %}
+                            <span class="indicator good">Good</span>
+                        {% elif result.mcq_percentage|add:0 >= 40 %}
+                            <span class="indicator average">Average</span>
+                        {% else %}
+                            <span class="indicator needs-improvement">Needs Work</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <p class="score-detail">You got {{ result.mcq_score }} out of {{ recommendations.total_questions }} questions correct</p>
+            </div>
+            
+            <!-- Trait Scores -->
             <div class="score-category">
                 <h4>Trait Scores - Detailed Breakdown</h4>
                 {% for trait, score in recommendations.trait_scores.items %}
@@ -61,7 +88,7 @@
             <div class="charts-container">
                 <!-- Pie Chart for Trait Scores -->
                 <div class="chart-card">
-                    <h4>Trait Distribution</h4>
+                    <h4>Stream Score Distribution</h4>
                     <canvas id="traitPieChart" width="300" height="300"></canvas>
                 </div>
                 
@@ -72,6 +99,8 @@
                 </div>
             </div>
         </div>
+
+                </div>
 
         <!-- AI Career Guidance - Moved to Bottom -->
         <div class="guidance-section">

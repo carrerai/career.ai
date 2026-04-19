@@ -121,10 +121,10 @@ class SchoolTestStepView(View):
     def get(self, request, session_id, step):
         session = get_object_or_404(TestSession, session_id=session_id)
         
-        # Get MCQ questions for current step from database
-        questions_queryset = SchoolQuestion.objects.filter(step=step)
+        # Get ALL MCQ questions from database (not limited to step)
+        questions_queryset = SchoolQuestion.objects.all()
         
-        # Randomly select 10 questions from available questions for this step
+        # Randomly select 10 questions from all available questions
         import random
         questions = list(questions_queryset)
         if len(questions) > 10:
@@ -257,37 +257,38 @@ class SchoolTestResultView(View):
                         # Penalize wrong answers
                         stream_scores[response.question.stream_hint] -= 1
         
-        # Normalize to real percentages
-        total = sum(score for score in stream_scores.values() if score > 0)
-        if total > 0:
+        # Convert all scores to positive and normalize to percentages
+        # First, convert negative scores to positive by adding absolute value
+        min_score = min(stream_scores.values())
+        if min_score < 0:
             for stream in stream_scores:
-                if stream_scores[stream] > 0:
-                    stream_scores[stream] = round((stream_scores[stream] / total) * 100, 2)
-                else:
-                    stream_scores[stream] = 0
-        else:
-            # If no positive scores, set all to 0
-            for stream in stream_scores:
-                stream_scores[stream] = 0
+                stream_scores[stream] += abs(min_score)
         
-        # Normalize stream_scores to proper percentages
+        # Now normalize to percentages (all streams should show)
         total = sum(stream_scores.values())
         if total > 0:
-            for key in stream_scores:
-                stream_scores[key] = round((stream_scores[key] / total) * 100, 2)
+            for stream in stream_scores:
+                stream_scores[stream] = round((stream_scores[stream] / total) * 100, 2)
+        else:
+            # If all scores are 0, give equal percentage
+            equal_percentage = 25.0  # 100% / 4 streams
+            for stream in stream_scores:
+                stream_scores[stream] = equal_percentage
         
         # Use stream_scores directly as trait_scores
         normalized_trait_scores = stream_scores.copy()
         
-        # Get school recommendations based on REAL trait_scores
-        school_recommendations = get_school_recommendations(normalized_trait_scores)
-        school_recommendations['mcq_score'] = correct_answers
-        school_recommendations['mcq_percentage'] = mcq_percentage
-        school_recommendations['total_questions'] = total_questions
+        # Create simple recommendations directly from stream scores
+        top_stream = max(stream_scores, key=stream_scores.get)
         
-        # Ensure trait_scores are properly formatted for visualization
-        if 'trait_scores' not in school_recommendations:
-            school_recommendations['trait_scores'] = normalized_trait_scores
+        school_recommendations = {
+            'recommended_stream': top_stream,
+            'trait_scores': stream_scores,
+            'mcq_score': correct_answers,
+            'mcq_percentage': mcq_percentage,
+            'total_questions': total_questions,
+            'explanation': {}  # Will be filled by template fallbacks
+        }
         
         # Use school-specific explanation instead of generic AI guidance
         ai_guidance = school_recommendations.get('explanation', {})
