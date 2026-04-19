@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-totvc$n^ss=jm968q_yz12qf$$23!q512l@=amz3owldovh(wz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', 'df62-2405-201-4042-a868-b0a8-ebc8-d13-e525.ngrok-free.app']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.replit.dev',
@@ -137,3 +137,9 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CSRF Trusted Origins for ngrok
+CSRF_TRUSTED_ORIGINS = [
+    'https://df62-2405-201-4042-a868-b0a8-ebc8-d13-e525.ngrok-free.app',
+    'http://df62-2405-201-4042-a868-b0a8-ebc8-d13-e525.ngrok-free.app'
+]

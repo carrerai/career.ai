@@ -1,0 +1,124 @@
+{% extends 'core/base.html' %}
+
+{% block title %}School Stream Test - Step {{ current_step }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Progress Bar -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-gray-700">Step {{ current_step }} of {{ total_steps }}</span>
+                <span class="text-sm font-medium text-gray-700">{{ current_step|mul:20 }}% Complete</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+                <div class="bg-green-600 h-3 rounded-full transition-all duration-300" style="width: {{ current_step|mul:20 }}%"></div>
+            </div>
+        </div>
+
+        <!-- Test Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">School Stream Assessment</h1>
+            <p class="text-gray-600">Answer honestly to get the best stream recommendation</p>
+        </div>
+
+        <!-- Questions Form -->
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            {% for question in questions %}
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="mb-4">
+                    <span class="inline-block bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full mb-2">
+                        Question {{ forloop.counter }}
+                    </span>
+                    <h3 class="text-lg font-medium text-gray-900">{{ question.text }}</h3>
+                </div>
+                
+                <!-- Likert Scale Options -->
+                <div class="space-y-2">
+                    <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                        <input type="radio" name="question_{{ question.id }}" value="Strongly Agree" class="mr-3 text-green-600" required>
+                        <span class="flex-1">Strongly Agree</span>
+                        <span class="text-sm text-gray-500">+2</span>
+                    </label>
+                    
+                    <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                        <input type="radio" name="question_{{ question.id }}" value="Agree" class="mr-3 text-green-600" required>
+                        <span class="flex-1">Agree</span>
+                        <span class="text-sm text-gray-500">+1</span>
+                    </label>
+                    
+                    <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                        <input type="radio" name="question_{{ question.id }}" value="Neutral" class="mr-3 text-green-600" required>
+                        <span class="flex-1">Neutral</span>
+                        <span class="text-sm text-gray-500">0</span>
+                    </label>
+                    
+                    <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                        <input type="radio" name="question_{{ question.id }}" value="Disagree" class="mr-3 text-green-600" required>
+                        <span class="flex-1">Disagree</span>
+                        <span class="text-sm text-gray-500">-1</span>
+                    </label>
+                    
+                    <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                        <input type="radio" name="question_{{ question.id }}" value="Strongly Disagree" class="mr-3 text-green-600" required>
+                        <span class="flex-1">Strongly Disagree</span>
+                        <span class="text-sm text-gray-500">-2</span>
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between items-center pt-6">
+                {% if current_step > 1 %}
+                <button type="button" onclick="history.back()" class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                    Previous
+                </button>
+                {% else %}
+                <div></div>
+                {% endif %}
+                
+                <button type="submit" class="px-8 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors duration-200">
+                    {% if current_step == total_steps %}
+                    Complete Test
+                    {% else %}
+                    Next Step
+                    {% endif %}
+                </button>
+            </div>
+        </form>
+
+        <!-- Instructions -->
+        <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-blue-800">Instructions</h3>
+                    <div class="mt-2 text-sm text-blue-700">
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Answer honestly based on your true interests and abilities</li>
+                            <li>There are no right or wrong answers</li>
+                            <li>This test helps identify your natural strengths and preferences</li>
+                            <li>Each response will help determine the best stream for you</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom filter for Django template math */
+{% comment %}
+Note: The |mul:20 filter is not built into Django. 
+You may need to add a custom template filter or calculate this in the view.
+{% endcomment %}
+</style>
+{% endblock %}

@@ -9,13 +9,29 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 import json
 import uuid
-from .models import Question, Option, TestSession, UserResponse, Result
+from .models import Question, Option, TestSession, UserResponse, Result, SchoolUserResponse, SchoolResult, SchoolQuestion
 from .career_logic import get_career_recommendations, generate_career_guidance
+from .career_logic_school import get_career_recommendations as get_school_recommendations
 
 # Create your views here.
 
 def home(request):
     return render(request, 'core/home.html', {'user': request.user})
+
+@method_decorator(login_required, name='dispatch')
+class TestTypeView(View):
+    def get(self, request):
+        return render(request, 'core/test_type.html')
+
+@method_decorator(login_required, name='dispatch')
+class StartSchoolTestView(View):
+    def get(self, request):
+        # Create new test session for school test
+        session = TestSession.objects.create(
+            user=request.user,
+            session_id=str(uuid.uuid4())
+        )
+        return redirect('school_test_step', session_id=session.session_id, step=1)
 
 @method_decorator(login_required, name='dispatch')
 class StartTestView(View):
@@ -99,6 +115,219 @@ class TestStepView(View):
             return redirect('test_step', session_id=session_id, step=next_step)
         else:
             return redirect('test_result', session_id=session_id)
+
+@method_decorator(login_required, name='dispatch')
+class SchoolTestStepView(View):
+    def get(self, request, session_id, step):
+        session = get_object_or_404(TestSession, session_id=session_id)
+        
+        # Get MCQ questions for current step from database
+        questions_queryset = SchoolQuestion.objects.filter(step=step)
+        
+        # Randomly select 10 questions from available questions for this step
+        import random
+        questions = list(questions_queryset)
+        if len(questions) > 10:
+            questions = random.sample(questions, 10)
+        
+        # Convert to list of dictionaries for template compatibility
+        questions_data = []
+        for q in questions:
+            questions_data.append({
+                'id': q.id,
+                'text': q.text,
+                'option_a': q.option_a,
+                'option_b': q.option_b,
+                'option_c': q.option_c,
+                'option_d': q.option_d,
+                'stream_hint': q.stream_hint
+            })
+        
+        if step > 5:
+            return redirect('school_test_result', session_id=session_id)
+        
+        context = {
+            'session': session,
+            'questions': questions_data,
+            'current_step': step,
+            'total_steps': 5
+        }
+        
+        return render(request, 'core/school_test_step.html', context)
+    
+    def post(self, request, session_id, step):
+        session = get_object_or_404(TestSession, session_id=session_id)
+        
+        # Save MCQ responses
+        for key, value in request.POST.items():
+            if key.startswith('question_'):
+                question_id = key.split('_')[1]
+                selected_answer = value.upper()  # A, B, C, D
+                
+                try:
+                    # Get the question from database
+                    question = SchoolQuestion.objects.get(id=int(question_id))
+                    
+                    # Check if answer is correct
+                    is_correct = (selected_answer == question.correct_answer)
+                    
+                    # Create MCQ response record
+                    SchoolUserResponse.objects.create(
+                        session=session,
+                        question=question,
+                        selected_answer=selected_answer,
+                        is_correct=is_correct
+                    )
+                except SchoolQuestion.DoesNotExist:
+                    continue
+        
+        # Move to next step
+        next_step = step + 1
+        if next_step <= 5:
+            return redirect('school_test_step', session_id=session_id, step=next_step)
+        else:
+            return redirect('school_test_result', session_id=session_id)
+
+@method_decorator(login_required, name='dispatch')
+class SchoolTestResultView(View):
+    def get(self, request, session_id):
+        session = get_object_or_404(TestSession, session_id=session_id)
+        
+        # Check if school result already exists
+        if hasattr(session, 'school_result'):
+            result = session.school_result
+            # Calculate total questions from responses
+            total_questions = SchoolUserResponse.objects.filter(session=session).count()
+            # Use existing trait_scores from database (they're already calculated correctly)
+            trait_scores = result.trait_scores
+            # Get recommendations based on REAL trait_scores
+            school_recommendations = get_school_recommendations(trait_scores)
+            school_recommendations['mcq_score'] = result.mcq_score
+            school_recommendations['mcq_percentage'] = result.mcq_percentage
+            school_recommendations['total_questions'] = total_questions
+            school_recommendations['trait_scores'] = trait_scores
+            school_recommendations['recommended_stream'] = result.recommended_stream
+            # Use school-specific explanation from result.ai_guidance
+            ai_guidance = result.ai_guidance.get('explanation', {})
+        else:
+            # Calculate scores and generate result
+            result = self.calculate_school_result(session)
+            # Get recommendations based on trait_scores from database
+            school_recommendations = get_school_recommendations(result.trait_scores)
+            school_recommendations['mcq_score'] = result.mcq_score
+            school_recommendations['mcq_percentage'] = result.mcq_percentage
+            school_recommendations['total_questions'] = SchoolUserResponse.objects.filter(session=session).count()
+            school_recommendations['trait_scores'] = result.trait_scores
+            school_recommendations['recommended_stream'] = result.recommended_stream
+            ai_guidance = result.ai_guidance
+        
+        context = {
+            'session': session,
+            'result': result,
+            'recommendations': school_recommendations,
+            'ai_guidance': ai_guidance
+        }
+        
+        return render(request, 'core/school_test_result.html', context)
+    
+    def calculate_school_result(self, session):
+        responses = SchoolUserResponse.objects.filter(session=session)
+        
+        # Calculate MCQ score (out of 100)
+        total_questions = responses.count()
+        correct_answers = responses.filter(is_correct=True).count()
+        
+        # Calculate percentage score
+        if total_questions > 0:
+            mcq_percentage = round((correct_answers / total_questions) * 100, 2)
+        else:
+            mcq_percentage = 0.0
+        
+        # Calculate trait scores based on CORRECT ANSWERS only
+        stream_scores = {'PCM': 0, 'PCB': 0, 'Commerce': 0, 'Arts': 0}
+        
+        for response in responses:
+            if response.question and response.question.stream_hint:
+                # Only process valid streams (skip General and invalid ones)
+                if response.question.stream_hint in stream_scores:
+                    if response.is_correct:
+                        # Reward correct answers
+                        stream_scores[response.question.stream_hint] += 2
+                    else:
+                        # Penalize wrong answers
+                        stream_scores[response.question.stream_hint] -= 1
+        
+        # Normalize to real percentages
+        total = sum(score for score in stream_scores.values() if score > 0)
+        if total > 0:
+            for stream in stream_scores:
+                if stream_scores[stream] > 0:
+                    stream_scores[stream] = round((stream_scores[stream] / total) * 100, 2)
+                else:
+                    stream_scores[stream] = 0
+        else:
+            # If no positive scores, set all to 0
+            for stream in stream_scores:
+                stream_scores[stream] = 0
+        
+        # Normalize stream_scores to proper percentages
+        total = sum(stream_scores.values())
+        if total > 0:
+            for key in stream_scores:
+                stream_scores[key] = round((stream_scores[key] / total) * 100, 2)
+        
+        # Use stream_scores directly as trait_scores
+        normalized_trait_scores = stream_scores.copy()
+        
+        # Get school recommendations based on REAL trait_scores
+        school_recommendations = get_school_recommendations(normalized_trait_scores)
+        school_recommendations['mcq_score'] = correct_answers
+        school_recommendations['mcq_percentage'] = mcq_percentage
+        school_recommendations['total_questions'] = total_questions
+        
+        # Ensure trait_scores are properly formatted for visualization
+        if 'trait_scores' not in school_recommendations:
+            school_recommendations['trait_scores'] = normalized_trait_scores
+        
+        # Use school-specific explanation instead of generic AI guidance
+        ai_guidance = school_recommendations.get('explanation', {})
+        
+        # Create school result
+        school_result = SchoolResult.objects.create(
+            session=session,
+            trait_scores=normalized_trait_scores,
+            mcq_score=correct_answers,
+            mcq_percentage=mcq_percentage,
+            recommended_stream=school_recommendations['recommended_stream'],
+            ai_guidance=ai_guidance
+        )
+        
+        # Mark session as completed
+        session.is_completed = True
+        session.save()
+        
+        return school_result
+    
+    def get_questions_by_trait(self, trait):
+        """Get question IDs for a specific trait"""
+        import os
+        json_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'psychometric_questions.json')
+        
+        with open(json_path, 'r') as f:
+            all_questions = json.load(f)['questions']
+        
+        return [q['id'] for q in all_questions if q['trait'] == trait]
+    
+    def convert_score_to_likert(self, score):
+        """Convert numeric score back to Likert text"""
+        mapping = {
+            2: "Strongly Agree",
+            1: "Agree",
+            0: "Neutral",
+            -1: "Disagree",
+            -2: "Strongly Disagree"
+        }
+        return mapping.get(score, "Neutral")
 
 @method_decorator(login_required, name='dispatch')
 class TestResultView(View):
@@ -301,16 +530,29 @@ class ProfileView(View):
         
         for session in sessions:
             if hasattr(session, 'result'):
+                # Bachelor's test result
                 results.append({
                     'session_id': session.session_id,
                     'created_at': session.created_at,
                     'completed_at': session.updated_at,
+                    'test_type': 'bachelors',
                     'top_domain': session.result.top_domain,
                     'recommended_degrees': session.result.recommended_degrees,
                     'aptitude_scores': session.result.aptitude_scores,
                     'interest_scores': session.result.interest_scores,
                     'personality_scores': session.result.personality_scores,
                     'ai_guidance': session.result.ai_guidance
+                })
+            elif hasattr(session, 'school_result'):
+                # School test result
+                results.append({
+                    'session_id': session.session_id,
+                    'created_at': session.created_at,
+                    'completed_at': session.updated_at,
+                    'test_type': 'school',
+                    'recommended_stream': session.school_result.recommended_stream,
+                    'trait_scores': session.school_result.trait_scores,
+                    'ai_guidance': session.school_result.ai_guidance
                 })
         
         context = {

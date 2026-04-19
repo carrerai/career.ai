@@ -9,8 +9,12 @@ urlpatterns = [
     path('api/logout/', views.LogoutView.as_view(), name='logout'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
     path('api/profile/', views.ProfileView.as_view(), name='update_profile'),
+    path('test-type/', views.TestTypeView.as_view(), name='test_type'),
     path('start-test/', views.StartTestView.as_view(), name='start_test'),
+    path('start-school-test/', views.StartSchoolTestView.as_view(), name='start_school_test'),
     path('test/<uuid:session_id>/step/<int:step>/', views.TestStepView.as_view(), name='test_step'),
     path('test/<uuid:session_id>/result/', views.TestResultView.as_view(), name='test_result'),
+    path('test/school/<uuid:session_id>/step/<int:step>/', views.SchoolTestStepView.as_view(), name='school_test_step'),
+    path('test/school/<uuid:session_id>/result/', views.SchoolTestResultView.as_view(), name='school_test_result'),
     path('save-response/', views.SaveResponseView.as_view(), name='save_response'),
 ]

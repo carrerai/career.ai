@@ -901,47 +901,79 @@
                     <div class="result-card">
                         <div class="result-top">
                             <div class="result-domain-wrap">
-                                <div class="result-domain">{{ result.top_domain|title }}</div>
+                                {% if result.test_type == 'school' %}
+                                    <div class="result-domain">{{ result.recommended_stream }} Stream</div>
+                                {% else %}
+                                    <div class="result-domain">{{ result.top_domain|title }}</div>
+                                {% endif %}
                                 <div class="result-date">{{ result.completed_at|date:"F d, Y" }}</div>
                             </div>
-                            <span class="result-index-badge">Test #{{ forloop.counter }}</span>
+                            <span class="result-index-badge">
+                                {% if result.test_type == 'school' %}
+                                    School Test #{{ forloop.counter }}
+                                {% else %}
+                                    Bachelor's Test #{{ forloop.counter }}
+                                {% endif %}
+                            </span>
                         </div>
 
                         <div class="result-scores">
-                            <div class="score-category">
-                                <span class="score-label">Top Aptitude</span>
-                                <span class="score-value">
-                                    {% for trait, score in result.aptitude_scores.items %}
-                                        {% if forloop.counter0 == 0 %}{{ trait|title }}: {{ score|floatformat:0 }}%{% endif %}
-                                    {% endfor %}
-                                </span>
-                            </div>
-                            <div class="score-category">
-                                <span class="score-label">Top Interest</span>
-                                <span class="score-value">
-                                    {% for trait, score in result.interest_scores.items %}
-                                        {% if forloop.counter0 == 0 %}{{ trait }}: {{ score|floatformat:0 }}%{% endif %}
-                                    {% endfor %}
-                                </span>
-                            </div>
-                            <div class="score-category">
-                                <span class="score-label">Top Personality</span>
-                                <span class="score-value">
-                                    {% for trait, score in result.personality_scores.items %}
-                                        {% if forloop.counter0 == 0 %}{{ trait }}: {{ score|floatformat:0 }}%{% endif %}
-                                    {% endfor %}
-                                </span>
-                            </div>
+                            {% if result.test_type == 'school' %}
+                                <!-- School test scores -->
+                                {% for trait, score in result.trait_scores.items %}
+                                    <div class="score-category">
+                                        <span class="score-label">{{ trait|title }}</span>
+                                        <span class="score-value">{{ score }}</span>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <!-- Bachelor's test scores -->
+                                <div class="score-category">
+                                    <span class="score-label">Top Aptitude</span>
+                                    <span class="score-value">
+                                        {% for trait, score in result.aptitude_scores.items %}
+                                            {% if forloop.counter0 == 0 %}{{ trait|title }}: {{ score|floatformat:0 }}%{% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                                <div class="score-category">
+                                    <span class="score-label">Top Interest</span>
+                                    <span class="score-value">
+                                        {% for trait, score in result.interest_scores.items %}
+                                            {% if forloop.counter0 == 0 %}{{ trait }}: {{ score|floatformat:0 }}%{% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                                <div class="score-category">
+                                    <span class="score-label">Top Personality</span>
+                                    <span class="score-value">
+                                        {% for trait, score in result.personality_scores.items %}
+                                            {% if forloop.counter0 == 0 %}{{ trait }}: {{ score|floatformat:0 }}%{% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                            {% endif %}
                         </div>
 
-                        <div class="recommended-degrees">
-                            <div class="degrees-title">Recommended Degrees</div>
-                            <div class="degree-tags">
-                                {% for degree in result.recommended_degrees %}
-                                    <span class="degree-tag">{{ degree }}</span>
-                                {% endfor %}
+                        {% if result.test_type == 'school' %}
+                            <!-- School test recommendation -->
+                            <div class="recommended-degrees">
+                                <div class="degrees-title">Recommended Stream</div>
+                                <div class="degree-tags">
+                                    <span class="degree-tag">{{ result.recommended_stream }}</span>
+                                </div>
                             </div>
-                        </div>
+                        {% else %}
+                            <!-- Bachelor's test degrees -->
+                            <div class="recommended-degrees">
+                                <div class="degrees-title">Recommended Degrees</div>
+                                <div class="degree-tags">
+                                    {% for degree in result.recommended_degrees %}
+                                        <span class="degree-tag">{{ degree }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                     {% endfor %}
 

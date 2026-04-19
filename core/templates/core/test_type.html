@@ -1,0 +1,270 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Choose Your Test Type{% endblock %}
+
+{% block extra_css %}
+<style>
+.test-type-container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 60px 24px;
+}
+
+.test-type-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.test-type-header h1 {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+}
+
+.test-type-header p {
+    font-size: 1.25rem;
+    color: var(--gray-600);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.test-type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 60px;
+}
+
+.test-type-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 48px 32px;
+    text-align: center;
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.test-type-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.test-type-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+}
+
+.test-type-icon.blue {
+    background: #e0f2fe;
+}
+
+.test-type-icon.green {
+    background: #dcfce7;
+}
+
+.test-type-card h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 16px;
+}
+
+.test-type-card p {
+    color: var(--gray-600);
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+.test-type-features {
+    text-align: left;
+    margin-bottom: 40px;
+}
+
+.test-type-features li {
+    display: flex;
+    align-items: center;
+    color: var(--gray-600);
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+}
+
+.test-type-features li svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.test-type-btn {
+    display: inline-block;
+    padding: 12px 32px;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: opacity var(--transition), transform var(--transition);
+}
+
+.test-type-btn:hover {
+    transform: translateY(-2px);
+}
+
+.test-type-btn.primary {
+    background: var(--black);
+    color: var(--white);
+}
+
+.test-type-btn.primary:hover {
+    opacity: 0.85;
+}
+
+.test-type-btn.secondary {
+    background: #16a34a;
+    color: var(--white);
+}
+
+.test-type-btn.secondary:hover {
+    opacity: 0.85;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--gray-600);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition);
+}
+
+.back-link:hover {
+    color: var(--black);
+}
+
+.back-link svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+    .test-type-container {
+        padding: 40px 20px;
+    }
+    
+    .test-type-header h1 {
+        font-size: 2.25rem;
+    }
+    
+    .test-type-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .test-type-card {
+        padding: 32px 24px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="test-type-container">
+    <div class="test-type-header">
+        <h1>What are you looking for?</h1>
+        <p>Choose the test that matches your current educational goal</p>
+    </div>
+
+    <div class="test-type-grid">
+            <!-- Undergraduate Test -->
+        <div class="test-type-card">
+            <div class="test-type-icon blue">
+                <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+            </div>
+            <h2>Undergraduate (Bachelors)</h2>
+            <p>
+                Find the right bachelor's degree and career path after 12th grade. 
+                Comprehensive assessment for college and career planning.
+            </p>
+            <ul class="test-type-features">
+                <li>
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Career domain recommendations
+                </li>
+                <li>
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Bachelor's degree guidance
+                </li>
+                <li>
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Professional career paths
+                </li>
+            </ul>
+            <a href="{% url 'start_test' %}" class="test-type-btn primary">
+                Start Bachelors Test
+            </a>
+        </div>
+
+        <!-- School Stream Test -->
+        <div class="test-type-card">
+            <div class="test-type-icon green">
+                <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+            </div>
+            <h2>School Stream (11th-12th)</h2>
+            <p>
+                Choose the right stream for Class 11-12. 
+                Perfect for Class 10 students deciding between PCM, PCB, Commerce, or Arts.
+            </p>
+            <ul class="test-type-features">
+                <li>
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Stream recommendations (PCM/PCB/Commerce/Arts)
+                </li>
+                <li>
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Subject selection guidance
+                </li>
+                <li>
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Future career foundation
+                </li>
+            </ul>
+            <a href="{% url 'start_school_test' %}" class="test-type-btn secondary">
+                Start School Test
+            </a>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <a href="{% url 'home' %}" class="back-link">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to Home
+        </a>
+    </div>
+</div>
+{% endblock %}

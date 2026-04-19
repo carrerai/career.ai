@@ -1,0 +1,244 @@
+{
+"questions": [
+{
+"id": 1,
+"text": "I enjoy solving mathematical problems and understanding formulas.",
+"trait": "analytical",
+"stream_hint": "PCM"
+},
+{
+"id": 2,
+"text": "I find it fascinating to learn about how the human body works and functions.",
+"trait": "biological_interest",
+"stream_hint": "PCB"
+},
+{
+"id": 3,
+"text": "I am interested in understanding how businesses make profits and grow.",
+"trait": "business_interest",
+"stream_hint": "Commerce"
+},
+{
+"id": 4,
+"text": "I enjoy reading about historical events and understanding how societies evolved.",
+"trait": "humanities_interest",
+"stream_hint": "Arts"
+},
+{
+"id": 5,
+"text": "I prefer working in groups rather than alone on projects.",
+"trait": "social",
+"stream_hint": "General"
+},
+{
+"id": 6,
+"text": "I like analyzing data and finding patterns in numbers.",
+"trait": "analytical",
+"stream_hint": "PCM"
+},
+{
+"id": 7,
+"text": "I am curious about different diseases and their treatments.",
+"trait": "biological_interest",
+"stream_hint": "PCB"
+},
+{
+"id": 8,
+"text": "I want to learn about stock markets and investment strategies.",
+"trait": "business_interest",
+"stream_hint": "Commerce"
+},
+{
+"id": 9,
+"text": "I enjoy debating social issues and current affairs.",
+"trait": "humanities_interest",
+"stream_hint": "Arts"
+},
+{
+"id": 10,
+"text": "I feel comfortable speaking in front of large groups.",
+"trait": "social",
+"stream_hint": "General"
+},
+{
+"id": 11,
+"text": "I prefer subjects with clear logical answers over subjective discussions.",
+"trait": "analytical",
+"stream_hint": "PCM"
+},
+{
+"id": 12,
+"text": "I find genetics and evolution topics very interesting.",
+"trait": "biological_interest",
+"stream_hint": "PCB"
+},
+{
+"id": 13,
+"text": "I want to understand how companies manage their finances.",
+"trait": "business_interest",
+"stream_hint": "Commerce"
+},
+{
+"id": 14,
+"text": "I enjoy studying different cultures and their traditions.",
+"trait": "humanities_interest",
+"stream_hint": "Arts"
+},
+{
+"id": 15,
+"text": "I like helping others understand difficult concepts.",
+"trait": "social",
+"stream_hint": "General"
+},
+{
+"id": 16,
+"text": "I enjoy physics experiments and understanding natural laws.",
+"trait": "analytical",
+"stream_hint": "PCM"
+},
+{
+"id": 17,
+"text": "I am interested in environmental science and ecology.",
+"trait": "biological_interest",
+"stream_hint": "PCB"
+},
+{
+"id": 18,
+"text": "I want to learn about marketing and advertising strategies.",
+"trait": "business_interest",
+"stream_hint": "Commerce"
+},
+{
+"id": 19,
+"text": "I find psychology and human behavior fascinating.",
+"trait": "humanities_interest",
+"stream_hint": "Arts"
+},
+{
+"id": 20,
+"text": "I enjoy organizing events and coordinating with people.",
+"trait": "social",
+"stream_hint": "General"
+},
+{
+"id": 21,
+"text": "I prefer solving puzzles and brain teasers in my free time.",
+"trait": "analytical",
+"stream_hint": "PCM"
+},
+{
+"id": 22,
+"text": "I am interested in medical careers and healthcare professions.",
+"trait": "biological_interest",
+"stream_hint": "PCB"
+},
+{
+"id": 23,
+"text": "I want to understand international trade and business relations.",
+"trait": "business_interest",
+"stream_hint": "Commerce"
+},
+{
+"id": 24,
+"text": "I enjoy studying political systems and governance.",
+"trait": "humanities_interest",
+"stream_hint": "Arts"
+},
+{
+"id": 25,
+"text": "I prefer team sports over individual activities.",
+"trait": "social",
+"stream_hint": "General"
+},
+{
+"id": 26,
+"text": "I like building things and understanding how machines work.",
+"trait": "analytical",
+"stream_hint": "PCM"
+},
+{
+"id": 27,
+"text": "I find microbiology and cell biology topics engaging.",
+"trait": "biological_interest",
+"stream_hint": "PCB"
+},
+{
+"id": 28,
+"text": "I am interested in entrepreneurship and starting businesses.",
+"trait": "business_interest",
+"stream_hint": "Commerce"
+},
+{
+"id": 29,
+"text": "I enjoy literature and analyzing different writing styles.",
+"trait": "humanities_interest",
+"stream_hint": "Arts"
+},
+{
+"id": 30,
+"text": "I feel energized when working with others on common goals.",
+"trait": "social",
+"stream_hint": "General"
+},
+{
+"id": 31,
+"text": "I prefer subjects that involve calculation and problem-solving.",
+"trait": "analytical",
+"stream_hint": "PCM"
+},
+{
+"id": 32,
+"text": "I am curious about pharmacology and drug development.",
+"trait": "biological_interest",
+"stream_hint": "PCB"
+},
+{
+"id": 33,
+"text": "I want to learn about accounting and financial management.",
+"trait": "business_interest",
+"stream_hint": "Commerce"
+},
+{
+"id": 34,
+"text": "I enjoy studying geography and understanding global issues.",
+"trait": "humanities_interest",
+"stream_hint": "Arts"
+},
+{
+"id": 35,
+"text": "I prefer collaborative learning over competitive environments.",
+"trait": "social",
+"stream_hint": "General"
+},
+{
+"id": 36,
+"text": "I enjoy chemistry experiments and understanding chemical reactions.",
+"trait": "analytical",
+"stream_hint": "PCM"
+},
+{
+"id": 37,
+"text": "I am interested in nutrition and healthy lifestyle topics.",
+"trait": "biological_interest",
+"stream_hint": "PCB"
+},
+{
+"id": 38,
+"text": "I want to understand business law and commercial regulations.",
+"trait": "business_interest",
+"stream_hint": "Commerce"
+},
+{
+"id": 39,
+"text": "I enjoy philosophy and thinking about life's big questions.",
+"trait": "humanities_interest",
+"stream_hint": "Arts"
+},
+{
+"id": 40,
+"text": "I enjoy mentoring younger students or helping classmates.",
+"trait": "social",
+"stream_hint": "General"
+}
+]
+}

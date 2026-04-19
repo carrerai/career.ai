@@ -1,0 +1,858 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Your Stream Results - AI Career Guide{% endblock %}
+
+{% block content %}
+<div class="result-container">
+    <div class="result-header">
+        <!-- <div class="success-icon">??</div> -->
+        <h1>Your Stream Analysis is Ready!</h1>
+        <p>Based on your psychometric assessment, here's your personalized stream recommendation</p>
+    </div>
+
+    <div class="result-content">
+        
+        <!-- Top Stream -->
+        <div class="domain-card">
+            <div class="domain-header">
+                <h2>{{ recommendations.recommended_stream|upper }} Stream</h2>
+                <span class="confidence-badge">Primary Recommendation</span>
+            </div>
+            <p class="domain-description">
+                {% if recommendations.recommended_stream == 'PCM' %}Your skills and interests align perfectly with Science (PCM), combining strong analytical abilities with mathematical thinking for engineering and technical careers.{% elif recommendations.recommended_stream == 'PCB' %}You show strong aptitude for medical and biological sciences, with excellent analytical skills and a caring personality ideal for healthcare professions.{% elif recommendations.recommended_stream == 'Commerce' %}Your profile suggests strong potential in business and finance roles, with natural analytical abilities and interest in economic systems.{% elif recommendations.recommended_stream == 'Arts' %}Your creative personality and artistic interests make you well-suited for careers in design, media, and creative industries.{% else %}Your combination of creativity and analytical skills makes you well-suited for diverse career paths.{% endif %}
+            </p>
+        </div>
+
+        <!-- Trait Scores -->
+        <div class="scores-section">
+            <h3>Your Assessment Scores</h3>
+            
+            <div class="score-category">
+                <h4>Trait Scores - Detailed Breakdown</h4>
+                {% for trait, score in recommendations.trait_scores.items %}
+                <div class="score-bar enhanced">
+                    <div class="score-header">
+                        <span class="score-label">{{ trait|title }}</span>
+                        <span class="score-value">{{ score|add:0 }}%</span>
+                    </div>
+                    <div class="score-track">
+                        <div class="score-fill" style="width: {{ score|add:0 }}%"></div>
+                    </div>
+                    <div class="score-indicator">
+                        {% if score|add:0 >= 80 %}
+                            <span class="indicator excellent">Excellent</span>
+                        {% elif score|add:0 >= 60 %}
+                            <span class="indicator good">Good</span>
+                        {% elif score|add:0 >= 40 %}
+                            <span class="indicator average">Average</span>
+                        {% else %}
+                            <span class="indicator needs-improvement">Needs Work</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Visual Representations -->
+        <div class="visual-section">
+            <h3>Your Results Visualization</h3>
+            <div class="charts-container">
+                <!-- Pie Chart for Trait Scores -->
+                <div class="chart-card">
+                    <h4>Trait Distribution</h4>
+                    <canvas id="traitPieChart" width="300" height="300"></canvas>
+                </div>
+                
+                <!-- Bar Chart for Trait Scores -->
+                <div class="chart-card">
+                    <h4>Trait Comparison</h4>
+                    <canvas id="traitBarChart" width="300" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Career Guidance - Moved to Bottom -->
+        <div class="guidance-section">
+            <h3>Your {{ recommendations.recommended_stream|upper }} Stream Success Path</h3>
+            <div class="guidance-card">
+                <!-- Always show guidance content with stream-specific fallbacks -->
+                <!-- Why This Stream Fits You -->
+                <div class="guidance-item">
+                    <h4>Why This Stream Fits You</h4>
+                    <p>
+                        {% if recommendations.recommended_stream == 'PCM' %}
+                            Your strong analytical thinking and problem-solving abilities make PCM an excellent choice for engineering and technical careers. Your mathematical aptitude and logical reasoning create the perfect foundation for success in science and technology fields.
+                        {% elif recommendations.recommended_stream == 'PCB' %}
+                            Your strong aptitude for biological sciences combined with analytical thinking makes PCB the perfect choice for medical and life sciences careers. Your scientific reasoning and natural curiosity about living systems create excellent potential for healthcare professions.
+                        {% elif recommendations.recommended_stream == 'Commerce' %}
+                            Your business interest and understanding of economic concepts make Commerce a natural fit. Your numerical ability and analytical skills create strong potential for successful careers in finance, management, and entrepreneurship.
+                        {% elif recommendations.recommended_stream == 'Arts' %}
+                            Your interest in human society, psychology, and culture makes Arts the perfect choice. Your creative personality and critical thinking abilities create excellent potential for careers in design, media, and social sciences.
+                        {% else %}
+                            Your strong aptitude for this stream combined with your analytical abilities creates an excellent foundation for success in this career domain.
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <!-- Key Strengths -->
+                <div class="guidance-item">
+                    <h4>Your Key Strengths</h4>
+                    <ul class="strengths-list">
+                        {% if recommendations.recommended_stream == 'PCM' %}
+                            <li>Strong logical reasoning and mathematical aptitude</li>
+                            <li>Excellent problem-solving and analytical skills</li>
+                            <li>Natural ability to understand complex technical concepts</li>
+                            <li>Methodical approach to challenges</li>
+                        {% elif recommendations.recommended_stream == 'PCB' %}
+                            <li>Scientific reasoning ability and analytical mindset</li>
+                            <li>Natural curiosity about living systems</li>
+                            <li>Methodical approach to problem-solving</li>
+                            <li>Strong attention to detail and observation skills</li>
+                        {% elif recommendations.recommended_stream == 'Commerce' %}
+                            <li>Numerical ability and business acumen</li>
+                            <li>Strong analytical and decision-making skills</li>
+                            <li>Understanding of economic systems</li>
+                            <li>Natural leadership and communication abilities</li>
+                        {% elif recommendations.recommended_stream == 'Arts' %}
+                            <li>Creative thinking and artistic expression</li>
+                            <li>Strong communication and interpersonal skills</li>
+                            <li>Critical thinking and social awareness</li>
+                            <li>Ability to understand diverse perspectives</li>
+                        {% else %}
+                            <li>Analytical thinking and problem-solving abilities</li>
+                            <li>Strong learning aptitude and adaptability</li>
+                            <li>Methodical approach to challenges</li>
+                            <li>Natural curiosity and exploration mindset</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <!-- Stream Opportunities -->
+                <div class="guidance-item">
+                    <h4>Stream Opportunities & Career Paths</h4>
+                    <div class="career-degree-section">
+                        <h5>Top Career Opportunities</h5>
+                        <div class="career-details">
+                            <div class="career-paths">
+                                <strong>Potential Roles:</strong>
+                                <ul>
+                                    {% if recommendations.recommended_stream == 'PCM' %}
+                                        <li>Software Engineer/Developer</li>
+                                        <li>Data Scientist/Analyst</li>
+                                        <li>Mechanical/Electrical Engineer</li>
+                                        <li>Research Scientist</li>
+                                    {% elif recommendations.recommended_stream == 'PCB' %}
+                                        <li>Doctor/Physician</li>
+                                        <li>Surgeon/Medical Specialist</li>
+                                        <li>Biotechnologist/Researcher</li>
+                                        <li>Pharmacist/Medicinal Chemist</li>
+                                    {% elif recommendations.recommended_stream == 'Commerce' %}
+                                        <li>Chartered Accountant/Financial Analyst</li>
+                                        <li>Business Manager/Consultant</li>
+                                        <li>Investment Banker/Financial Advisor</li>
+                                        <li>Entrepreneur/Business Owner</li>
+                                    {% elif recommendations.recommended_stream == 'Arts' %}
+                                        <li>Graphic Designer/Creative Director</li>
+                                        <li>Journalist/Media Professional</li>
+                                        <li>Psychologist/Counselor</li>
+                                        <li>Social Worker/NGO Professional</li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            <div class="salary-info">
+                                <strong>Salary Range:</strong> 
+                                {% if recommendations.recommended_stream == 'PCM' %}4-8 LPA entry level to 15-30 LPA experienced
+                                {% elif recommendations.recommended_stream == 'PCB' %}6-12 LPA entry level to 20-40 LPA experienced
+                                {% elif recommendations.recommended_stream == 'Commerce' %}3-7 LPA entry level to 12-25 LPA experienced
+                                {% elif recommendations.recommended_stream == 'Arts' %}2-5 LPA entry level to 8-20 LPA experienced
+                                {% endif %}
+                            </div>
+                            <div class="growth-info">
+                                <strong>Growth Potential:</strong> Excellent growth trajectory with specialization and continuous learning
+                            </div>
+                            <div class="demand-info">
+                                <strong>Industry Demand:</strong> 
+                                {% if recommendations.recommended_stream == 'PCM' %}High demand in tech and engineering sectors
+                                {% elif recommendations.recommended_stream == 'PCB' %}Steady demand with future growth in healthcare
+                                {% elif recommendations.recommended_stream == 'Commerce' %}Strong demand in finance and business sectors
+                                {% elif recommendations.recommended_stream == 'Arts' %}Growing demand in creative and digital industries
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Skill Development -->
+                <div class="guidance-item">
+                    <h4>Skill Development Areas</h4>
+                    <ul class="guidance-list">
+                        {% if recommendations.recommended_stream == 'PCM' %}
+                            <li>Advanced Mathematics and Physics concepts</li>
+                            <li>Programming and computational thinking</li>
+                            <li>Problem-solving methodologies and algorithms</li>
+                            <li>Technical documentation and communication</li>
+                        {% elif recommendations.recommended_stream == 'PCB' %}
+                            <li>Strong foundation in Biology, Chemistry, and Physics</li>
+                            <li>Analytical reasoning and scientific methodology</li>
+                            <li>Medical entrance exam preparation</li>
+                            <li>Research methodology and laboratory skills</li>
+                        {% elif recommendations.recommended_stream == 'Commerce' %}
+                            <li>Financial accounting and business mathematics</li>
+                            <li>Economic analysis and market research</li>
+                            <li>Business communication and presentation skills</li>
+                            <li>Digital literacy and financial software proficiency</li>
+                        {% elif recommendations.recommended_stream == 'Arts' %}
+                            <li>Creative writing and content development</li>
+                            <li>Visual design and digital media skills</li>
+                            <li>Research and critical analysis abilities</li>
+                            <li>Communication and interpersonal skills</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <!-- Next Steps -->
+                <div class="guidance-item">
+                    <h4>Recommended Next Steps</h4>
+                    <ul class="guidance-list">
+                        {% if recommendations.recommended_stream == 'PCM' %}
+                            <li>Focus on Mathematics and Physics in grades 11-12</li>
+                            <li>Prepare for JEE/Main and other engineering entrance exams</li>
+                            <li>Research top engineering colleges and their specializations</li>
+                            <li>Develop programming and problem-solving skills through practice</li>
+                        {% elif recommendations.recommended_stream == 'PCB' %}
+                            <li>Excel in Biology, Chemistry, and Physics subjects</li>
+                            <li>Prepare for NEET and other medical entrance exams</li>
+                            <li>Research top medical colleges and MBBS programs</li>
+                            <li>Gain practical experience through science projects and volunteering</li>
+                        {% elif recommendations.recommended_stream == 'Commerce' %}
+                            <li>Focus on Accountancy, Business Studies, and Economics</li>
+                            <li>Prepare for CA/CS foundation exams and other commerce entrances</li>
+                            <li>Research top commerce colleges and business schools</li>
+                            <li>Develop financial literacy and business awareness</li>
+                        {% elif recommendations.recommended_stream == 'Arts' %}
+                            <li>Explore subjects like Psychology, Sociology, and Literature</li>
+                            <li>Prepare for arts and humanities entrance exams if required</li>
+                            <li>Build a portfolio of creative work and projects</li>
+                            <li>Develop research and writing skills</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+            </button>
+            <a href="{% url 'test_type' %}" class="btn-secondary">
+                Take Another Test
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Chart Rendering Script -->
+<script>
+// Store Django template data as JSON
+const traitScores = {
+    {% for trait, score in recommendations.trait_scores.items %}
+    "{{ trait|title }}": {{ score|add:"0" }}{% if not forloop.last %},{% endif %}
+    {% endfor %}
+};
+
+// Initialize charts when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Pie Chart for Trait Scores
+    const traitCtx = document.getElementById('traitPieChart').getContext('2d');
+    new Chart(traitCtx, {
+        type: 'pie',
+        data: {
+            labels: Object.keys(traitScores),
+            datasets: [{
+                data: Object.values(traitScores),
+                backgroundColor: [
+                    '#FF6384',
+                    '#36A2EB',
+                    '#FFCE56',
+                    '#4BC0C0',
+                    '#9966FF'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Bar Chart for Trait Profile
+    const traitBarCtx = document.getElementById('traitBarChart').getContext('2d');
+    
+    new Chart(traitBarCtx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(traitScores),
+            datasets: [{
+                label: 'Trait Score',
+                data: Object.values(traitScores),
+                backgroundColor: '#36A2EB',
+                borderColor: '#1E88E5',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Score: ' + context.parsed.y + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+
+<!-- PDF Generation Script -->
+<script>
+// Store Django template data as JSON
+const reportData = {
+    recommendedStream: "{{ recommendations.recommended_stream|title|escapejs }}",
+    whyThisStream: "{{ recommendations.why_this_stream|default:'Based on your assessment, this stream aligns well with your strengths and interests.'|escapejs }}",
+    studentStrengths: [
+        {% for strength in recommendations.student_strengths %}
+        "{{ strength|escapejs }}"{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ],
+    careerOptions: [
+        {% for career in recommendations.career_options %}
+        "{{ career|escapejs }}"{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+};
+
+function shareAsPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Set up fonts
+    doc.setFont('helvetica');
+    
+    // Add title
+    doc.setFontSize(20);
+    doc.text('School Stream Assessment Report', 20, 32);
+    
+    // Add line separator
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.5);
+    doc.line(20, 35, pageWidth - 20, 35);
+    
+    let yPosition = 45;
+    
+    // User Information
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Assessment Results', 20, yPosition);
+    yPosition += 10;
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Recommended Stream: ' + reportData.recommendedStream, 20, yPosition);
+    yPosition += 8;
+    
+    // AI Guidance Section
+    if (yPosition > pageHeight - 40) {
+        doc.addPage();
+        yPosition = 45;
+    }
+    
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Personalized Stream Guidance', 20, yPosition);
+    yPosition += 10;
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    
+    if (reportData.whyThisStream) {
+        doc.text('Why This Stream Fits You:', 20, yPosition);
+        yPosition += 6;
+        
+        const whyLines = doc.splitTextToSize(reportData.whyThisStream, pageWidth - 40);
+        for (let i = 0; i < whyLines.length; i++) {
+            if (yPosition > pageHeight - 20) {
+                doc.addPage();
+                yPosition = 45;
+            }
+            doc.text(whyLines[i], 20, yPosition);
+            yPosition += 6;
+        }
+        yPosition += 5;
+    }
+    
+    // Strengths
+    if (reportData.studentStrengths.length > 0) {
+        doc.text('Your Key Strengths:', 20, yPosition);
+        yPosition += 6;
+        
+        for (let i = 0; i < reportData.studentStrengths.length; i++) {
+            if (yPosition > pageHeight - 20) {
+                doc.addPage();
+                yPosition = 45;
+            }
+            doc.text('  ' + (i + 1) + '. ' + reportData.studentStrengths[i], 20, yPosition);
+            yPosition += 6;
+        }
+        yPosition += 5;
+    }
+    
+    // Career Options
+    if (reportData.careerOptions.length > 0) {
+        doc.text('Career Opportunities:', 20, yPosition);
+        yPosition += 6;
+        
+        for (let i = 0; i < reportData.careerOptions.length; i++) {
+            if (yPosition > pageHeight - 20) {
+                doc.addPage();
+                yPosition = 45;
+            }
+            doc.text('  ' + (i + 1) + '. ' + reportData.careerOptions[i], 20, yPosition);
+            yPosition += 6;
+        }
+    }
+    
+    // Add footer
+    doc.setFontSize(10);
+    doc.text('Generated on ' + new Date().toLocaleDateString(), 20, pageHeight - 10);
+    
+    // Save the PDF
+    doc.save('Stream_Assessment_Report.pdf');
+}
+</script>
+
+<!-- Load jsPDF library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+.result-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    min-height: 100vh;
+}
+
+.result-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.success-icon {
+    font-size: 4rem;
+    margin-bottom: 24px;
+    animation: bounce 1s ease;
+}
+
+.result-header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.5rem;
+    font-weight: 400;
+    color: #000;
+    margin-bottom: 16px;
+}
+
+.result-header p {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+.result-content {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+}
+
+.domain-card {
+    background: linear-gradient(135deg, #000 0%, #333 100%);
+    color: #fff;
+    padding: 40px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.domain-header h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.confidence-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.domain-description {
+    margin-top: 20px;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+.scores-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.scores-section h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #000;
+    margin-bottom: 24px;
+}
+
+.score-category {
+    margin-bottom: 32px;
+}
+
+.score-category h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 16px;
+}
+
+.score-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.score-label {
+    flex: 0 0 120px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #666;
+}
+
+.score-track {
+    flex: 1;
+    height: 8px;
+    background: #e5e5e5;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0 16px;
+}
+
+.score-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #36A2EB 0%, #1E88E5 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.score-value {
+    flex: 0 0 40px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #000;
+}
+
+.score-bar.enhanced {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.score-bar.enhanced .score-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.score-bar.enhanced .score-label {
+    font-weight: 600;
+    color: #333;
+}
+
+.score-bar.enhanced .score-track {
+    height: 8px;
+    background: #e5e5e5;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 8px 0;
+}
+
+.score-bar.enhanced .score-value {
+    font-weight: 600;
+    color: #000;
+}
+
+.score-indicator {
+    margin-top: 8px;
+    text-align: center;
+}
+
+.indicator {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.indicator.excellent {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.indicator.good {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.indicator.average {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.indicator.needs-improvement {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.visual-section {
+    margin-bottom: 48px;
+}
+
+.charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.chart-card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.chart-card h4 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.125rem;
+    font-weight: 400;
+    color: #000;
+    margin-bottom: 16px;
+}
+
+.chart-card canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+.guidance-section {
+    margin-bottom: 32px;
+}
+
+.guidance-card {
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.1);
+}
+
+.guidance-item {
+    margin-bottom: 32px;
+}
+
+.guidance-item:last-child {
+    margin-bottom: 0;
+}
+
+.guidance-item h4 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: #000;
+    margin-bottom: 12px;
+}
+
+.guidance-item p {
+    color: #666;
+    line-height: 1.6;
+}
+
+.strengths-list, .career-list, .caution-list {
+    list-style: none;
+    padding: 0;
+}
+
+.strengths-list li, .career-list li {
+    background: rgba(99, 102, 241, 0.1);
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 4px solid #6366f1;
+}
+
+.caution-list li {
+    display: flex;
+    align-items: flex-start;
+    background: rgba(251, 191, 36, 0.1);
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 4px solid #fbbf24;
+}
+
+.caution-list li svg {
+    flex-shrink: 0;
+    margin-right: 12px;
+    margin-top: 2px;
+    color: #f59e0b;
+}
+
+.subjects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.subject-item {
+    background: rgba(99, 102, 241, 0.1);
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.result-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background: #000;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #333;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: #fff;
+    color: #000;
+    border: 2px solid #000;
+}
+
+.btn-secondary:hover {
+    background: #f5f5f5;
+    transform: translateY(-1px);
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+@media (max-width: 768px) {
+    .result-container {
+        padding: 20px 16px;
+    }
+    
+    .result-header h1 {
+        font-size: 2rem;
+    }
+    
+    .domain-card {
+        padding: 24px;
+    }
+    
+    .charts-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .result-actions {
+        flex-direction: column;
+    }
+    
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
