@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Question, Option, TestSession, UserResponse, Result
+from .models import Question, Option, TestSession, UserResponse, Result, SchoolQuestion, SchoolUserResponse
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
@@ -51,3 +51,32 @@ class ResultAdmin(admin.ModelAdmin):
     search_fields = ['session__session_id', 'top_domain']
     readonly_fields = ['created_at']
     ordering = ['-created_at']
+
+@admin.register(SchoolQuestion)
+class SchoolQuestionAdmin(admin.ModelAdmin):
+    list_display = ['id', 'text_preview', 'step', 'stream_hint', 'correct_answer', 'created_at']
+    list_filter = ['step', 'stream_hint', 'correct_answer', 'created_at']
+    search_fields = ['text', 'stream_hint']
+    readonly_fields = ['id', 'created_at']
+    ordering = ['step', 'stream_hint', 'id']
+    
+    def get_queryset(self, request):
+        # Only show questions that have a valid stream hint (exclude empty/null)
+        qs = super().get_queryset(request)
+        return qs.filter(stream_hint__in=['PCM', 'PCB', 'Commerce', 'Arts'])
+    
+    def text_preview(self, obj):
+        return obj.text[:50] + '...' if len(obj.text) > 50 else obj.text
+    text_preview.short_description = 'Question Text'
+
+@admin.register(SchoolUserResponse)
+class SchoolUserResponseAdmin(admin.ModelAdmin):
+    list_display = ['id', 'session', 'question_preview', 'selected_answer', 'is_correct', 'created_at']
+    list_filter = ['is_correct', 'question__step', 'question__stream_hint', 'created_at']
+    search_fields = ['session__session_id', 'question__text']
+    readonly_fields = ['created_at']
+    ordering = ['-created_at']
+    
+    def question_preview(self, obj):
+        return obj.question.text[:30] + '...' if len(obj.question.text) > 30 else obj.question.text
+    question_preview.short_description = 'Question'

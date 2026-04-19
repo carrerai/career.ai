@@ -1055,7 +1055,7 @@
     <header class="header" id="site-header">
         <div class="header-container">
             <div class="logo">
-                <h1>CAREER.AI</h1>
+                <h1>CAREER.BUDDY</h1>
             </div>
             <nav class="nav-menu">
                 <ul>
@@ -1078,7 +1078,7 @@
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <nav class="mobile-sidebar" id="mobile-sidebar">
         <div class="mobile-sidebar-header">
-            <div class="mobile-logo">CAREER.AI</div>
+            <div class="mobile-logo">CAREER.BUDDY</div>
             {% if user.is_authenticated %}
                 <div class="mobile-username">{{ user.get_full_name|default:user.username }}</div>
             {% endif %}
@@ -1105,11 +1105,11 @@
             </div>
             <h1>Find Your <em>Perfect</em><br>Career Path</h1>
             <p class="hero-sub">
-                Our AI-powered psychometric test analyses your interests, aptitude and personality to recommend the ideal bachelor's degree and career roadmap — built for 12th grade students.
+                Our psychometric test analyses your interests, aptitude and personality to recommend the ideal bachelor's degree and career roadmap — built for 12th grade students.
             </p>
             <div class="hero-actions">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'start_test' %}" class="btn-primary">
+                    <a href="{% url 'test_type' %}" class="btn-primary">
                         Start Your Test
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </a>
@@ -1165,8 +1165,8 @@
                     <li>Top colleges and entrance exam guidance</li>
                 </ul>
                 {% if user.is_authenticated %}
-                    <a href="{% url 'start_test' %}" class="ai-band-btn">
-                        Start Free Test →
+                    <a href="{% url 'test_type' %}" class="ai-band-btn">
+                        Start Free Test
                     </a>
                 {% else %}
                     <a href="{% url 'auth' %}" class="ai-band-btn">

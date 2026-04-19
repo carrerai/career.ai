@@ -71,6 +71,18 @@ class UserResponse(models.Model):
     def __str__(self):
         return f"Response for {self.session.session_id} - Question {self.question.id}"
 
+class SchoolResult(models.Model):
+    session = models.OneToOneField(TestSession, on_delete=models.CASCADE, related_name='school_result')
+    trait_scores = models.JSONField(default=dict)
+    mcq_score = models.IntegerField(default=0)  # Score out of 100
+    mcq_percentage = models.FloatField(default=0.0)  # Percentage score
+    recommended_stream = models.CharField(max_length=50)
+    ai_guidance = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"School Result for {self.session.session_id} - {self.recommended_stream} ({self.mcq_percentage}%)"
+
 class Result(models.Model):
     session = models.OneToOneField(TestSession, on_delete=models.CASCADE, related_name='result')
     aptitude_scores = models.JSONField(default=dict)
@@ -83,3 +95,46 @@ class Result(models.Model):
     
     def __str__(self):
         return f"Result for {self.session.session_id} - {self.top_domain}"
+
+class SchoolQuestion(models.Model):
+    """Model for school stream MCQ questions"""
+    
+    STEPS = [
+        (1, 'Step 1'),
+        (2, 'Step 2'),
+        (3, 'Step 3'),
+        (4, 'Step 4'),
+        (5, 'Step 5'),
+    ]
+    
+    STREAM_HINTS = [
+        ('PCM', 'Physics, Chemistry, Mathematics'),
+        ('PCB', 'Physics, Chemistry, Biology'),
+        ('Commerce', 'Commerce'),
+        ('Arts', 'Arts'),
+    ]
+    
+    id = models.AutoField(primary_key=True)
+    step = models.IntegerField(choices=STEPS, null=True, blank=True)
+    text = models.TextField()
+    option_a = models.CharField(max_length=255, null=True, blank=True)
+    option_b = models.CharField(max_length=255, null=True, blank=True)
+    option_c = models.CharField(max_length=255, null=True, blank=True)
+    option_d = models.CharField(max_length=255, null=True, blank=True)
+    correct_answer = models.CharField(max_length=1, choices=[('A', 'A'), ('B', 'B'), ('C', 'C'), ('D', 'D')], null=True, blank=True)
+    stream_hint = models.CharField(max_length=20, choices=STREAM_HINTS)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"School Question {self.id} - Step {self.step} ({self.stream_hint})"
+
+class SchoolUserResponse(models.Model):
+    session = models.ForeignKey(TestSession, on_delete=models.CASCADE, related_name='school_responses')
+    question = models.ForeignKey(SchoolQuestion, on_delete=models.CASCADE, null=True, blank=True)
+    selected_answer = models.CharField(max_length=1, choices=[('A', 'A'), ('B', 'B'), ('C', 'C'), ('D', 'D')], null=True, blank=True)
+    is_correct = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"School Response for {self.session.session_id} - Question {self.question.id}"
+

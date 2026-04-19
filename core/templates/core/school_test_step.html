@@ -1,0 +1,338 @@
+{% extends 'core/base.html' %}
+
+{% block title %}School Stream Test - Step {{ current_step }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.school-test-container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+.progress-section {
+    margin-bottom: 48px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.progress-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-600);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background: var(--gray-200);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #16a34a;
+    border-radius: 6px;
+    transition: width 0.3s ease;
+}
+
+.test-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.test-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 8px;
+}
+
+.test-header p {
+    color: var(--gray-600);
+    font-size: 1.125rem;
+}
+
+.question-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.question-card {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: 32px;
+}
+
+.question-header {
+    margin-bottom: 24px;
+}
+
+.question-badge {
+    display: inline-block;
+    background: #dcfce7;
+    color: #16a34a;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+}
+
+.question-text {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--black);
+    line-height: 1.6;
+}
+
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.option-label {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color var(--transition), border-color var(--transition);
+}
+
+.option-label:hover {
+    background: var(--gray-50);
+    border-color: var(--gray-300);
+}
+
+.option-input {
+    margin-right: 16px;
+    accent-color: #16a34a;
+}
+
+.option-text {
+    flex: 1;
+    font-size: 1rem;
+    color: var(--gray-600);
+}
+
+.option-score {
+    font-size: 0.875rem;
+    color: var(--gray-400);
+    margin-left: 8px;
+}
+
+.navigation-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 32px;
+}
+
+.nav-btn {
+    padding: 12px 24px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background-color var(--transition), transform var(--transition);
+    border: 2px solid var(--gray-300);
+    background: var(--white);
+    color: var(--gray-700);
+    cursor: pointer;
+}
+
+.nav-btn:hover {
+    transform: translateY(-1px);
+}
+
+.nav-btn.primary {
+    background: #16a34a;
+    color: var(--white);
+    border-color: #16a34a;
+}
+
+.nav-btn.primary:hover {
+    background: #15803d;
+    border-color: #15803d;
+}
+
+.nav-btn.secondary {
+    background: var(--white);
+    color: var(--gray-700);
+    border-color: var(--gray-300);
+}
+
+.nav-btn.secondary:hover {
+    background: var(--gray-50);
+}
+
+.instructions-box {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    margin-top: 48px;
+}
+
+.instructions-content {
+    display: flex;
+    align-items: flex-start;
+}
+
+.instructions-icon {
+    flex-shrink: 0;
+    margin-right: 16px;
+    margin-top: 2px;
+}
+
+.instructions-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1e40af;
+    margin-bottom: 8px;
+}
+
+.instructions-list {
+    font-size: 0.875rem;
+    color: #1e40af;
+    line-height: 1.5;
+}
+
+.instructions-list li {
+    margin-bottom: 4px;
+}
+
+@media (max-width: 768px) {
+    .school-test-container {
+        padding: 24px 16px;
+    }
+    
+    .test-header h1 {
+        font-size: 1.875rem;
+    }
+    
+    .question-card {
+        padding: 20px;
+    }
+    
+    .navigation-section {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .nav-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="school-test-container">
+    <!-- Progress Bar -->
+    <div class="progress-section">
+        <div class="progress-header">
+            <span class="progress-text">Step {{ current_step }} of {{ total_steps }}</span>
+            <span class="progress-text">{% widthratio current_step total_steps 100 %}% Complete</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {% widthratio current_step total_steps 100 %}%"></div>
+        </div>
+    </div>
+
+    <!-- Test Header -->
+    <div class="test-header">
+        <h1>School Stream Assessment</h1>
+        <p>Answer honestly to get best stream recommendation</p>
+    </div>
+
+    <!-- Questions Form -->
+    <form method="post" class="question-form">
+        {% csrf_token %}
+        
+        {% for question in questions %}
+        <div class="question-card">
+            <div class="question-header">
+                <span class="question-badge">Question {{ forloop.counter }}</span>
+                <h3 class="question-text">{{ question.text }}</h3>
+            </div>
+            
+            <!-- MCQ Options -->
+            <div class="options-list">
+                <label class="option-label">
+                    <input type="radio" name="question_{{ question.id }}" value="A" class="option-input" required>
+                    <span class="option-text">A) {{ question.option_a }}</span>
+                </label>
+                
+                <label class="option-label">
+                    <input type="radio" name="question_{{ question.id }}" value="B" class="option-input" required>
+                    <span class="option-text">B) {{ question.option_b }}</span>
+                </label>
+                
+                <label class="option-label">
+                    <input type="radio" name="question_{{ question.id }}" value="C" class="option-input" required>
+                    <span class="option-text">C) {{ question.option_c }}</span>
+                </label>
+                
+                <label class="option-label">
+                    <input type="radio" name="question_{{ question.id }}" value="D" class="option-input" required>
+                    <span class="option-text">D) {{ question.option_d }}</span>
+                </label>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Navigation Buttons -->
+        <div class="navigation-section">
+            {% if current_step > 1 %}
+            <button type="button" onclick="history.back()" class="nav-btn secondary">
+                Previous
+            </button>
+            {% else %}
+            <div></div>
+            {% endif %}
+            
+            <button type="submit" class="nav-btn primary">
+                {% if current_step == total_steps %}
+                Complete Test
+                {% else %}
+                Next Step
+                {% endif %}
+            </button>
+        </div>
+    </form>
+
+    <!-- Instructions -->
+    <div class="instructions-box">
+        <div class="instructions-content">
+            <div class="instructions-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="#1e40af">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                </svg>
+            </div>
+            <div>
+                <h4 class="instructions-title">Instructions</h4>
+                <ul class="instructions-list">
+                    <li>Answer honestly based on your true interests and abilities</li>
+                    <li>There are no right or wrong answers</li>
+                    <li>This test helps identify your natural strengths and preferences</li>
+                    <li>Each response will help determine the best stream for you</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

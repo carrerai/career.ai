@@ -6,7 +6,7 @@
 {% block content %}
 <div class="result-container">
     <div class="result-header">
-        <div class="success-icon">🎉</div>
+        <!-- <div class="success-icon"></div> -->
         <h1>Your Career Analysis is Ready!</h1>
         <p>Based on your psychometric assessment, here's your personalized career recommendation</p>
     </div>
@@ -23,6 +23,59 @@
             </p>
         </div>
 
+        <!-- Score Breakdown - Moved to Top -->
+        <div class="scores-section">
+            <h3>Your Assessment Scores</h3>
+            
+            <div class="score-category">
+                <h4>Aptitude Scores</h4>
+                {% for trait, score in result.aptitude_scores.items %}
+                <div class="score-bar">
+                    <span class="score-label">{{ trait|title }}</span>
+                    <div class="score-track">
+                        <div class="score-fill" style="width: {{ score|add:"0" }}%"></div>
+                    </div>
+                    <span class="score-value">{{ score|add:"0" }}%</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="score-category">
+                <h4>Interest Profile (RIASEC)</h4>
+                {% for trait, score in result.interest_scores.items %}
+                <div class="score-bar">
+                    <span class="score-label">
+                        {% if trait == 'R' %}Realistic{% elif trait == 'I' %}Investigative{% elif trait == 'A' %}Artistic{% elif trait == 'S' %}Social{% elif trait == 'E' %}Enterprising{% else %}Conventional{% endif %}
+                    </span>
+                    <div class="score-track">
+                        <div class="score-fill" style="width: {{ score|add:"0" }}%"></div>
+                    </div>
+                    <span class="score-value">{{ score|add:"0" }}%</span>
+                </div>
+                {% endfor %}
+            </div>
+
+                    </div>
+
+        <!-- Visual Representations -->
+        <div class="visual-section">
+            <h3>Your Results Visualization</h3>
+            <div class="charts-container">
+                <!-- Pie Chart for Aptitude Scores -->
+                <div class="chart-card">
+                    <h4>Aptitude Distribution</h4>
+                    <canvas id="aptitudePieChart" width="300" height="300"></canvas>
+                </div>
+                
+                <!-- Bar Chart for Interest Profile -->
+                <div class="chart-card">
+                    <h4>Interest Profile</h4>
+                    <canvas id="interestBarChart" width="300" height="300"></canvas>
+                </div>
+                
+                            </div>
+        </div>
+
         <!-- Recommended Degrees -->
         <div class="degrees-section">
             <h3>Recommended Bachelor's Degrees</h3>
@@ -30,7 +83,6 @@
                 {% if result.recommended_degrees %}
                     {% for degree in result.recommended_degrees %}
                     <div class="degree-card">
-                        <div class="degree-icon">🎓</div>
                         <h4>{{ degree }}</h4>
                         <div class="degree-match">95% Match</div>
                     </div>
@@ -41,7 +93,7 @@
             </div>
         </div>
 
-        <!-- AI Career Guidance -->
+        <!-- AI Career Guidance - Moved to Bottom -->
         <div class="guidance-section">
             <h3>Personalized Career Guidance</h3>
             <div class="guidance-card">
@@ -62,7 +114,7 @@
                                 {% endfor %}
                             </ul>
                         {% else %}
-                            <p>{{ result.ai_guidance.strengths|default:"Your profile shows strong analytical and creative abilities." }}</p>
+                            <p>Your profile shows strong analytical and creative abilities.</p>
                         {% endif %}
                     </div>
                     
@@ -95,59 +147,11 @@
                                 </div>
                             {% endfor %}
                         {% else %}
-                            <p>{{ result.ai_guidance.career_paths|default:"The recommended degrees offer excellent career opportunities." }}</p>
+                            <p>The recommended degrees offer excellent career opportunities.</p>
                         {% endif %}
                     </div>
                     
-                    <!-- Education Roadmap -->
-                    <div class="guidance-item">
-                        <h4>Education Roadmap</h4>
-                        {% if result.ai_guidance.education_roadmap %}
-                            <div class="education-details">
-                                {% if result.ai_guidance.education_roadmap.top_colleges %}
-                                    <div class="edu-section">
-                                        <strong>Top Colleges:</strong>
-                                        <ul>
-                                            {% for college in result.ai_guidance.education_roadmap.top_colleges %}
-                                                <li>{{ college }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                {% endif %}
-                                {% if result.ai_guidance.education_roadmap.entrance_exams %}
-                                    <div class="edu-section">
-                                        <strong>Entrance Exams:</strong>
-                                        <ul>
-                                            {% for exam in result.ai_guidance.education_roadmap.entrance_exams %}
-                                                <li>{{ exam }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                {% endif %}
-                                {% if result.ai_guidance.education_roadmap.preparation_tips %}
-                                    <div class="edu-section">
-                                        <strong>Preparation Tips:</strong>
-                                        <ul>
-                                            {% for tip in result.ai_guidance.education_roadmap.preparation_tips %}
-                                                <li>{{ tip }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                {% endif %}
-                                {% if result.ai_guidance.education_roadmap.alternative_paths %}
-                                    <div class="edu-section">
-                                        <strong>Alternative Paths:</strong>
-                                        <ul>
-                                            {% for path in result.ai_guidance.education_roadmap.alternative_paths %}
-                                                <li>{{ path }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% endif %}
-                    </div>
-                    
+                                        
                     <!-- Skill Development -->
                     <div class="guidance-item">
                         <h4>Skill Development Plan</h4>
@@ -227,11 +231,7 @@
                                 {% if result.ai_guidance.industry_insights.challenges %}
                                     <div class="industry-section">
                                         <strong>Challenges:</strong>
-                                        <ul>
-                                            {% for challenge in result.ai_guidance.industry_insights.challenges %}
-                                                <li>{{ challenge }}</li>
-                                            {% endfor %}
-                                        </ul>
+                                        <p>{{ result.ai_guidance.industry_insights.challenges }}</p>
                                     </div>
                                 {% endif %}
                             </div>
@@ -240,12 +240,12 @@
                     
                     <!-- Action Steps -->
                     <div class="guidance-item">
-                        <h4>Your Action Plan</h4>
+                        <h4>Your Next Steps</h4>
                         {% if result.ai_guidance.action_steps %}
-                            <div class="action-timeline">
+                            <div class="action-steps">
                                 {% if result.ai_guidance.action_steps.immediate %}
-                                    <div class="action-phase">
-                                        <h5>Immediate (Next 1-3 Months)</h5>
+                                    <div class="step-category">
+                                        <h5>Immediate Actions (Next 1-3 months)</h5>
                                         <ul>
                                             {% for action in result.ai_guidance.action_steps.immediate %}
                                                 <li>{{ action }}</li>
@@ -254,28 +254,28 @@
                                     </div>
                                 {% endif %}
                                 {% if result.ai_guidance.action_steps.short_term %}
-                                    <div class="action-phase">
-                                        <h5>Short Term (3-12 Months)</h5>
+                                    <div class="step-category">
+                                        <h5>Short-term Goals (3-12 months)</h5>
                                         <ul>
-                                            {% for goal in result.ai_guidance.action_steps.short_term %}
-                                                <li>{{ goal }}</li>
+                                            {% for action in result.ai_guidance.action_steps.short_term %}
+                                                <li>{{ action }}</li>
                                             {% endfor %}
                                         </ul>
                                     </div>
                                 {% endif %}
                                 {% if result.ai_guidance.action_steps.long_term %}
-                                    <div class="action-phase">
-                                        <h5>Long Term (1-3 Years)</h5>
+                                    <div class="step-category">
+                                        <h5>Long-term Planning (1-3 years)</h5>
                                         <ul>
-                                            {% for goal in result.ai_guidance.action_steps.long_term %}
-                                                <li>{{ goal }}</li>
+                                            {% for action in result.ai_guidance.action_steps.long_term %}
+                                                <li>{{ action }}</li>
                                             {% endfor %}
                                         </ul>
                                     </div>
                                 {% endif %}
                                 {% if result.ai_guidance.action_steps.resources %}
-                                    <div class="action-phase">
-                                        <h5>Resources</h5>
+                                    <div class="step-category">
+                                        <h5>Resources for Further Exploration</h5>
                                         <ul>
                                             {% for resource in result.ai_guidance.action_steps.resources %}
                                                 <li>{{ resource }}</li>
@@ -284,8 +284,6 @@
                                     </div>
                                 {% endif %}
                             </div>
-                        {% else %}
-                            <p>{{ result.ai_guidance.next_steps|default:"Research suggested programs and explore internship opportunities." }}</p>
                         {% endif %}
                     </div>
                 {% else %}
@@ -297,59 +295,10 @@
             </div>
         </div>
 
-        <!-- Score Breakdown -->
-        <div class="scores-section">
-            <h3>Your Assessment Scores</h3>
-            
-            <div class="score-category">
-                <h4>Aptitude Scores</h4>
-                {% for trait, score in result.aptitude_scores.items %}
-                <div class="score-bar">
-                    <span class="score-label">{{ trait|title }}</span>
-                    <div class="score-track">
-                        <div class="score-fill" style="width: {{ score|add:"0" }}%"></div>
-                    </div>
-                    <span class="score-value">{{ score|add:"0" }}%</span>
-                </div>
-                {% endfor %}
-            </div>
-
-            <div class="score-category">
-                <h4>Interest Profile (RIASEC)</h4>
-                {% for trait, score in result.interest_scores.items %}
-                <div class="score-bar">
-                    <span class="score-label">
-                        {% if trait == 'R' %}Realistic{% elif trait == 'I' %}Investigative{% elif trait == 'A' %}Artistic{% elif trait == 'S' %}Social{% elif trait == 'E' %}Enterprising{% else %}Conventional{% endif %}
-                    </span>
-                    <div class="score-track">
-                        <div class="score-fill" style="width: {{ score|add:"0" }}%"></div>
-                    </div>
-                    <span class="score-value">{{ score|add:"0" }}%</span>
-                </div>
-                {% endfor %}
-            </div>
-
-            <div class="score-category">
-                <h4>Personality Traits (Big Five)</h4>
-                {% for trait, score in result.personality_scores.items %}
-                <div class="score-bar">
-                    <span class="score-label">
-                        {% if trait == 'O' %}Openness{% elif trait == 'C' %}Conscientiousness{% elif trait == 'E' %}Extraversion{% elif trait == 'A' %}Agreeableness{% else %}Neuroticism{% endif %}
-                    </span>
-                    <div class="score-track">
-                        <div class="score-fill" style="width: {{ score|add:"0" }}%"></div>
-                    </div>
-                    <span class="score-value">{{ score|add:"0" }}%</span>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        
         <!-- Actions -->
         <div class="result-actions">
             <button class="btn-primary" onclick="shareAsPDF()">
-                📄 Share Report
+                ?? Share Report
             </button>
             <a href="{% url 'home' %}" class="btn-secondary">
                 Start New Test
@@ -357,6 +306,117 @@
         </div>
     </div>
 </div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Chart Rendering Script -->
+<script>
+// Store Django template data as JSON
+const aptitudeScores = {
+    {% for trait, score in result.aptitude_scores.items %}
+    "{{ trait|title }}": {{ score|add:"0" }}{% if not forloop.last %},{% endif %}
+    {% endfor %}
+};
+
+const interestScores = {
+    {% for trait, score in result.interest_scores.items %}
+    "{{ trait }}": {{ score|add:"0" }}{% if not forloop.last %},{% endif %}
+    {% endfor %}
+};
+
+
+// Initialize charts when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Pie Chart for Aptitude Scores
+    const aptitudeCtx = document.getElementById('aptitudePieChart').getContext('2d');
+    new Chart(aptitudeCtx, {
+        type: 'pie',
+        data: {
+            labels: Object.keys(aptitudeScores),
+            datasets: [{
+                data: Object.values(aptitudeScores),
+                backgroundColor: [
+                    '#FF6384',
+                    '#36A2EB',
+                    '#FFCE56',
+                    '#4BC0C0',
+                    '#9966FF'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Bar Chart for Interest Profile
+    const interestCtx = document.getElementById('interestBarChart').getContext('2d');
+    const interestLabels = {
+        'R': 'Realistic',
+        'I': 'Investigative', 
+        'A': 'Artistic',
+        'S': 'Social',
+        'E': 'Enterprising',
+        'C': 'Conventional'
+    };
+    
+    new Chart(interestCtx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(interestScores).map(key => interestLabels[key] || key),
+            datasets: [{
+                label: 'Interest Score',
+                data: Object.values(interestScores),
+                backgroundColor: '#36A2EB',
+                borderColor: '#1E88E5',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Score: ' + context.parsed.y + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    });
+</script>
 
 <!-- PDF Generation Script -->
 <script>
@@ -656,6 +716,39 @@ function shareAsPDF() {
     font-size: 0.8rem;
     font-weight: 600;
     display: inline-block;
+}
+
+.visual-section {
+    margin-bottom: 48px;
+}
+
+.charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.chart-card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.chart-card h4 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.125rem;
+    font-weight: 400;
+    color: #000;
+    margin-bottom: 16px;
+}
+
+.chart-card canvas {
+    max-width: 100%;
+    height: auto;
 }
 
 .guidance-section {
