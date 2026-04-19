@@ -27,6 +27,17 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*', 'df62-2405-201-4042-a868-b0a8-ebc8-d13-e525.ngrok-free.app']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.replit.dev',
+    'https://*.pike.replit.dev',
+    'https://*.repl.co',
+]
+
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True
+
 
 # Application definition
 
